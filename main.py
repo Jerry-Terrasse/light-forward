@@ -8,6 +8,7 @@ import numpy as np
 import time
 
 from detect.ocr import extrace_text
+logging.getLogger("ppocr").setLevel(logging.ERROR)
 from ui.ui import UI, UIEvent
 
 
@@ -25,7 +26,7 @@ init_device("Android")
 # home()
 # uninstall("package_name_of_your_apk")
 
-ui = UI("ui", 1600, 900)
+ui = UI("ui", 900, 600)
 
 while True:
     begin_t = time.time()
@@ -33,23 +34,23 @@ while True:
     screen = G.DEVICE.snapshot()
     textes = extrace_text(screen)
     
-    canvas = np.zeros_like(screen)
+    # canvas = Image.fromarray(np.zeros_like(screen))
+    canvas = Image.new("RGB", (screen.shape[1], screen.shape[0]), (0, 0, 0))
     for box, text, score in textes:
-        box = np.array(box, dtype=np.int32)
-        cv2.polylines(canvas, [box], isClosed=True, color=(0, 255, 0), thickness=1)
+        # box = np.array(box, dtype=np.int32)
+        # cv2.polylines(canvas, [box], isClosed=True, color=(0, 255, 0), thickness=1)
         # cv2.putText(canvas, text, (box[0][0], box[0][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         # put text in box
         h = box[3][1] - box[0][1]
-        h *= 0.9
+        h = int(h * 0.85)
         # text_size, baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
         # text_scale = h / text_size[1]
         # cv2.putText(canvas, text, (box[0][0], box[0][1]), cv2.FONT_HERSHEY_SIMPLEX, text_scale, (0, 255, 0), 2)
         
-        pil_img = Image.fromarray(canvas)
-        draw = ImageDraw.Draw(pil_img)
+        draw = ImageDraw.Draw(canvas)
         fontText = ImageFont.truetype("./fonts/simfang.ttf", h, encoding="utf-8")
         draw.text((box[0][0], box[0][1]), text, (255, 255, 255), font=fontText)
-        canvas = np.array(pil_img)
+        draw.rectangle((*box[0], *box[2]), outline=(0, 255, 0))
 
         while e := ui.get_event():
             if e.event == UIEvent.SWIPE:
@@ -58,6 +59,7 @@ while True:
         
         end_t = time.time()
         print(f"fps: {1 / (end_t - begin_t)}")
+    canvas = np.array(canvas)
     
     ui.display(canvas)
     
