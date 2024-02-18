@@ -41,7 +41,9 @@ while True:
         # cv2.polylines(canvas, [box], isClosed=True, color=(0, 255, 0), thickness=1)
         # cv2.putText(canvas, text, (box[0][0], box[0][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         # put text in box
-        h = box[3][1] - box[0][1]
+        w, h = box[2][0] - box[0][0], box[2][1] - box[0][1]
+        if w <= 0 or h <= 0:
+            continue
         h = int(h * 0.85)
         # text_size, baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
         # text_scale = h / text_size[1]
