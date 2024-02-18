@@ -26,7 +26,7 @@ init_device("Android")
 # home()
 # uninstall("package_name_of_your_apk")
 
-ui = UI("ui", 900, 600)
+ui = UI("ui", 1200, 800)
 
 while True:
     begin_t = time.time()
@@ -59,8 +59,10 @@ while True:
                 (x1, y1), (x2, y2), t = e.info
                 G.DEVICE.swipe((x1, y1), (x2, y2), t)
         
-        end_t = time.time()
-        print(f"fps: {1 / (end_t - begin_t)}")
+    end_t = time.time()
+    fps = 1 / (end_t - begin_t)
+    fontText = ImageFont.truetype("./fonts/simfang.ttf", 70, encoding="utf-8")
+    draw.text((10, 10), f"fps: {fps:.2f}", (255, 255, 255), font=fontText)
     canvas = np.array(canvas)
     
     ui.display(canvas)
